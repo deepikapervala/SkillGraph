@@ -1,5 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from database import get_driver
 
@@ -9,6 +13,14 @@ app = FastAPI(
     description="Graph-based Career Recommendation Platform",
     version="1.0.0"
 )
+
+
+# ============================================================
+# PATHS
+# ============================================================
+
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BASE_DIR / "frontend"
 
 
 # ============================================================
@@ -50,6 +62,7 @@ def run_query(query, parameters=None):
 
 @app.on_event("startup")
 def startup():
+
     print("=" * 50)
     print("SkillGraph API starting...")
     print("=" * 50)
@@ -66,15 +79,14 @@ def startup():
 
 
 # ============================================================
-# ROOT
+# ROOT / FRONTEND
 # ============================================================
 
 @app.get("/")
 def root():
-    return {
-        "message": "SkillGraph API is running",
-        "status": "success"
-    }
+    return FileResponse(
+        FRONTEND_DIR / "index.html"
+    )
 
 
 # ============================================================
@@ -83,6 +95,7 @@ def root():
 
 @app.get("/health")
 def health():
+
     try:
         driver = get_driver()
         driver.verify_connectivity()
@@ -93,6 +106,7 @@ def health():
         }
 
     except Exception as e:
+
         print("HEALTH ERROR:", repr(e))
 
         raise HTTPException(
@@ -121,9 +135,11 @@ def get_candidates():
     """
 
     try:
+
         return run_query(query)
 
     except Exception as e:
+
         print("CANDIDATES ERROR:", repr(e))
 
         raise HTTPException(
@@ -150,6 +166,7 @@ def get_candidate_skills(candidate_id: str):
     """
 
     try:
+
         results = run_query(
             query,
             {
@@ -158,6 +175,7 @@ def get_candidate_skills(candidate_id: str):
         )
 
         if not results:
+
             raise HTTPException(
                 status_code=404,
                 detail="Candidate not found"
@@ -169,6 +187,7 @@ def get_candidate_skills(candidate_id: str):
         raise
 
     except Exception as e:
+
         print("CANDIDATE SKILLS ERROR:", repr(e))
 
         raise HTTPException(
@@ -198,9 +217,11 @@ def get_jobs():
     """
 
     try:
+
         return run_query(query)
 
     except Exception as e:
+
         print("JOBS ERROR:", repr(e))
 
         raise HTTPException(
@@ -230,6 +251,7 @@ def get_job(job_id: str):
     """
 
     try:
+
         results = run_query(
             query,
             {
@@ -238,6 +260,7 @@ def get_job(job_id: str):
         )
 
         if not results:
+
             raise HTTPException(
                 status_code=404,
                 detail="Job not found"
@@ -249,6 +272,7 @@ def get_job(job_id: str):
         raise
 
     except Exception as e:
+
         print("JOB ERROR:", repr(e))
 
         raise HTTPException(
@@ -293,6 +317,7 @@ def get_recommendations(candidate_id: str):
     """
 
     try:
+
         results = run_query(
             query,
             {
@@ -330,6 +355,7 @@ def get_recommendations(candidate_id: str):
         return recommendations
 
     except Exception as e:
+
         print("RECOMMENDATIONS ERROR:", repr(e))
 
         raise HTTPException(
@@ -375,6 +401,7 @@ def get_skill_gap(
     """
 
     try:
+
         results = run_query(
             query,
             {
@@ -384,6 +411,7 @@ def get_skill_gap(
         )
 
         if not results:
+
             raise HTTPException(
                 status_code=404,
                 detail="Candidate or job not found"
@@ -395,6 +423,7 @@ def get_skill_gap(
         raise
 
     except Exception as e:
+
         print("SKILL GAP ERROR:", repr(e))
 
         raise HTTPException(
@@ -412,6 +441,7 @@ def get_related_skills(skill_name: str):
 
     query = """
     MATCH (target:Skill)
+
     WHERE toLower(target.name) = toLower($skill_name)
 
     MATCH (target)<-[:REQUIRES]-(j:Job)
@@ -424,10 +454,12 @@ def get_related_skills(skill_name: str):
         COUNT(DISTINCT j) AS job_count
 
     ORDER BY job_count DESC, skill
+
     LIMIT 10
     """
 
     try:
+
         return run_query(
             query,
             {
@@ -436,6 +468,7 @@ def get_related_skills(skill_name: str):
         )
 
     except Exception as e:
+
         print("RELATED SKILLS ERROR:", repr(e))
 
         raise HTTPException(
@@ -467,6 +500,7 @@ def get_graph(candidate_id: str):
     """
 
     try:
+
         return run_query(
             query,
             {
@@ -475,9 +509,23 @@ def get_graph(candidate_id: str):
         )
 
     except Exception as e:
+
         print("GRAPH ERROR:", repr(e))
 
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve graph data"
         )
+
+
+# ============================================================
+# FRONTEND STATIC FILES
+# ============================================================
+
+app.mount(
+    "/",
+    StaticFiles(
+        directory=str(FRONTEND_DIR)
+    ),
+    name="frontend"
+)
