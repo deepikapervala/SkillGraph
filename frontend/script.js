@@ -84,35 +84,21 @@ async function loadCandidateSkills() {
 
         const data = await response.json();
 
-        const skills = data.skills || [];
-
-        if (!skills.length) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📚</div>
-                    <h3>No skills found</h3>
-                    <p>No skills are available for this candidate.</p>
-                </div>
-            `;
-            return;
-        }
-
         container.innerHTML = `
-            <div class="result-header">
-                <h3>${escapeHtml(data.name || "Candidate")}</h3>
-                <span>${skills.length} skills</span>
-            </div>
+            <div class="candidate-card">
+                <h3>${escapeHtml(data.candidate)}</h3>
 
-            <div class="skill-list">
-                ${skills.map(skill => `
-                    <div class="skill-card">
-                        <strong>${escapeHtml(
-                            typeof skill === "string"
-                                ? skill
-                                : skill.name || skill.skill || ""
-                        )}</strong>
-                    </div>
-                `).join("")}
+                <p class="card-label">
+                    Candidate ID: ${escapeHtml(data.candidate_id)}
+                </p>
+
+                <div class="skills-list">
+                    ${data.skills.map(skill => `
+                        <span class="skill-chip">
+                            ${escapeHtml(skill)}
+                        </span>
+                    `).join("")}
+                </div>
             </div>
         `;
 
@@ -131,14 +117,8 @@ async function loadCandidateSkills() {
 
 
 async function loadJobs() {
-    const container = document.getElementById("jobsContainer");
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        '<div class="loading">Loading jobs...</div>';
+    const container =
+        document.getElementById("jobsContainer");
 
     try {
         const response = await fetch(`${API_BASE}/jobs`);
@@ -149,57 +129,46 @@ async function loadJobs() {
 
         const jobs = await response.json();
 
-        if (!jobs.length) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">💼</div>
-                    <h3>No jobs available</h3>
-                    <p>No jobs are currently available.</p>
-                </div>
-            `;
-            return;
-        }
+        document.getElementById("jobCount").textContent =
+            jobs.length;
 
         container.innerHTML = jobs.map(job => `
             <div class="job-card">
-                <h3>${escapeHtml(job.title || job.name || "Job")}</h3>
+                <h3>${escapeHtml(job.title)}</h3>
 
-                ${
-                    job.company
-                        ? `<p class="company">${escapeHtml(job.company)}</p>`
-                        : ""
-                }
+                <div class="company">
+                    ${escapeHtml(job.company)}
+                </div>
 
-                ${
-                    job.location
-                        ? `<p class="location">📍 ${escapeHtml(job.location)}</p>`
-                        : ""
-                }
+                <div class="card-label">
+                    Required Skills
+                </div>
 
-                ${
-                    job.skills
-                        ? `
-                            <div class="job-skills">
-                                ${
-                                    (Array.isArray(job.skills)
-                                        ? job.skills
-                                        : [job.skills]
-                                    ).map(skill => `
-                                        <span class="skill-tag">
-                                            ${escapeHtml(
-                                                typeof skill === "string"
-                                                    ? skill
-                                                    : skill.name || ""
-                                            )}
-                                        </span>
-                                    `).join("")
-                                }
-                            </div>
-                        `
-                        : ""
-                }
+                <div class="skills-list">
+                    ${job.required_skills.map(skill => `
+                        <span class="skill-chip">
+                            ${escapeHtml(skill)}
+                        </span>
+                    `).join("")}
+                </div>
             </div>
         `).join("");
+
+        const gapJob =
+            document.getElementById("gapJob");
+
+        gapJob.innerHTML =
+            '<option value="">Select job</option>';
+
+        jobs.forEach(job => {
+            const option = document.createElement("option");
+
+            option.value = job.id;
+            option.textContent =
+                `${job.title} — ${job.company}`;
+
+            gapJob.appendChild(option);
+        });
 
     } catch (error) {
         console.error("Jobs loading error:", error);
@@ -220,21 +189,21 @@ async function loadRecommendations() {
         document.getElementById("recommendationCandidate").value;
 
     const container =
-        document.getElementById("recommendationResult");
+        document.getElementById("recommendationsContainer");
 
     if (!candidateId) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🎯</div>
                 <h3>Select a candidate</h3>
-                <p>Please select a candidate to view recommendations.</p>
+                <p>Please select a candidate first.</p>
             </div>
         `;
         return;
     }
 
     container.innerHTML =
-        '<div class="loading">Loading recommendations...</div>';
+        '<div class="loading">Generating recommendations...</div>';
 
     try {
         const response = await fetch(
@@ -247,45 +216,43 @@ async function loadRecommendations() {
             );
         }
 
-        const data = await response.json();
+        const recommendations = await response.json();
 
-        const recommendations =
-            data.recommendations ||
-            data.jobs ||
-            data.results ||
-            [];
-
-        if (!recommendations.length) {
+        if (recommendations.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">🎯</div>
+                    <div class="empty-icon">🔎</div>
                     <h3>No recommendations found</h3>
-                    <p>No matching career recommendations are available.</p>
+                    <p>No matching jobs were found.</p>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = recommendations.map(item => `
+        container.innerHTML = recommendations.map(job => `
             <div class="recommendation-card">
-                <h3>${escapeHtml(
-                    item.title ||
-                    item.name ||
-                    item.job_title ||
-                    "Recommendation"
-                )}</h3>
 
-                ${
-                    item.company
-                        ? `<p>${escapeHtml(item.company)}</p>`
-                        : ""
-                }
+                <span class="match-score">
+                    ${job.match_percentage}% Match
+                </span>
 
-                ${
-                    item.score !== undefined
-                        ? `<strong>Match: ${escapeHtml(item.score)}%</strong>`
-                        : ""
-                }
+                <h3>${escapeHtml(job.title)}</h3>
+
+                <div class="company">
+                    ${escapeHtml(job.company)}
+                </div>
+
+                <div class="card-label">
+                    Skill Match
+                </div>
+
+                <p>
+                    ${job.matched_skills}
+                    of
+                    ${job.total_skills}
+                    required skills matched
+                </p>
+
             </div>
         `).join("");
 
@@ -295,7 +262,7 @@ async function loadRecommendations() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">⚠️</div>
-                <h3>Unable to load recommendations</h3>
+                <h3>Unable to generate recommendations</h3>
                 <p>${escapeHtml(error.message)}</p>
             </div>
         `;
@@ -307,93 +274,66 @@ async function loadSkillGap() {
     const candidateId =
         document.getElementById("gapCandidate").value;
 
-    const container =
-        document.getElementById("gapResult");
+    const jobId =
+        document.getElementById("gapJob").value;
 
-    if (!candidateId) {
+    const container =
+        document.getElementById("skillGapContainer");
+
+    if (!candidateId || !jobId) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📊</div>
-                <h3>Select a candidate</h3>
-                <p>Please select a candidate to view the skill gap.</p>
+                <h3>Select candidate and job</h3>
+                <p>Both selections are required.</p>
             </div>
         `;
         return;
     }
 
     container.innerHTML =
-        '<div class="loading">Loading skill gap...</div>';
+        '<div class="loading">Analyzing skill gap...</div>';
 
     try {
         const response = await fetch(
-            `${API_BASE}/skill-gap/${encodeURIComponent(candidateId)}`
+            `${API_BASE}/skill-gap/${encodeURIComponent(candidateId)}/${encodeURIComponent(jobId)}`
         );
 
         if (!response.ok) {
-            throw new Error(
-                `Skill gap API error: ${response.status}`
-            );
+            throw new Error(`Skill gap API error: ${response.status}`);
         }
 
         const data = await response.json();
 
-        const missing =
-            data.missing_skills ||
-            data.missingSkills ||
-            data.missing ||
-            [];
+        if (data.missing_skills.length === 0) {
+            container.innerHTML = `
+                <div class="gap-result">
+                    <h3>${escapeHtml(data.job)}</h3>
 
-        const current =
-            data.current_skills ||
-            data.currentSkills ||
-            data.skills ||
-            [];
+                    <p class="no-gap">
+                        ✓ No skill gaps found. Candidate has all
+                        required skills.
+                    </p>
+                </div>
+            `;
+            return;
+        }
 
         container.innerHTML = `
-            <div class="skill-gap-result">
+            <div class="gap-result">
 
-                <div class="gap-section">
-                    <h3>Current Skills</h3>
+                <h3>${escapeHtml(data.job)}</h3>
 
-                    ${
-                        current.length
-                            ? `
-                                <div class="skill-list">
-                                    ${current.map(skill => `
-                                        <span class="skill-tag">
-                                            ${escapeHtml(
-                                                typeof skill === "string"
-                                                    ? skill
-                                                    : skill.name || ""
-                                            )}
-                                        </span>
-                                    `).join("")}
-                                </div>
-                            `
-                            : `<p>No current skills found.</p>`
-                    }
-                </div>
+                <p class="card-label">
+                    Missing Skills
+                </p>
 
-                <div class="gap-section">
-                    <h3>Missing Skills</h3>
-
-                    ${
-                        missing.length
-                            ? `
-                                <div class="skill-list">
-                                    ${missing.map(skill => `
-                                        <span class="skill-tag missing">
-                                            ${escapeHtml(
-                                                typeof skill === "string"
-                                                    ? skill
-                                                    : skill.name || ""
-                                            )}
-                                        </span>
-                                    `).join("")}
-                                </div>
-                            `
-                            : `<p>No missing skills found.</p>`
-                    }
+                <div class="missing-skills">
+                    ${data.missing_skills.map(skill => `
+                        <span class="missing-skill">
+                            ${escapeHtml(skill)}
+                        </span>
+                    `).join("")}
                 </div>
 
             </div>
@@ -405,7 +345,7 @@ async function loadSkillGap() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">⚠️</div>
-                <h3>Unable to load skill gap</h3>
+                <h3>Unable to analyze skill gap</h3>
                 <p>${escapeHtml(error.message)}</p>
             </div>
         `;
@@ -414,29 +354,29 @@ async function loadSkillGap() {
 
 
 async function loadRelatedSkills() {
-    const candidateId =
-        document.getElementById("relatedSkillsCandidate").value;
+    const skill =
+        document.getElementById("skillInput").value.trim();
 
     const container =
-        document.getElementById("relatedSkillsResult");
+        document.getElementById("relatedSkillsContainer");
 
-    if (!candidateId) {
+    if (!skill) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🔗</div>
-                <h3>Select a candidate</h3>
-                <p>Please select a candidate first.</p>
+                <h3>Enter a skill</h3>
+                <p>For example: SQL</p>
             </div>
         `;
         return;
     }
 
     container.innerHTML =
-        '<div class="loading">Loading related skills...</div>';
+        '<div class="loading">Finding related skills...</div>';
 
     try {
         const response = await fetch(
-            `${API_BASE}/related-skills/${encodeURIComponent(candidateId)}`
+            `${API_BASE}/related-skills/${encodeURIComponent(skill)}`
         );
 
         if (!response.ok) {
@@ -445,40 +385,28 @@ async function loadRelatedSkills() {
             );
         }
 
-        const data = await response.json();
+        const skills = await response.json();
 
-        const skills =
-            data.related_skills ||
-            data.relatedSkills ||
-            data.skills ||
-            [];
-
-        if (!skills.length) {
+        if (skills.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">🔗</div>
+                    <div class="empty-icon">🔎</div>
                     <h3>No related skills found</h3>
-                    <p>No related skills are available.</p>
+                    <p>Try another skill.</p>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = `
-            <div class="skill-list">
-                ${skills.map(skill => `
-                    <div class="related-skill-card">
-                        <strong>
-                            ${escapeHtml(
-                                typeof skill === "string"
-                                    ? skill
-                                    : skill.name || ""
-                            )}
-                        </strong>
-                    </div>
-                `).join("")}
+        container.innerHTML = skills.map(item => `
+            <div class="related-skill-card">
+                <strong>${escapeHtml(item.skill)}</strong>
+                <span class="job-count">
+                    ${item.job_count}
+                    job${item.job_count === 1 ? "" : "s"}
+                </span>
             </div>
-        `;
+        `).join("");
 
     } catch (error) {
         console.error("Related skills error:", error);
@@ -494,91 +422,74 @@ async function loadRelatedSkills() {
 }
 
 
-async function loadCareerGraph() {
+async function loadGraph() {
     const candidateId =
         document.getElementById("graphCandidate").value;
 
     const container =
-        document.getElementById("careerGraphResult");
+        document.getElementById("graphContainer");
 
     if (!candidateId) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🌐</div>
                 <h3>Select a candidate</h3>
-                <p>Please select a candidate to explore the career graph.</p>
+                <p>Please select a candidate first.</p>
             </div>
         `;
         return;
     }
 
     container.innerHTML =
-        '<div class="loading">Loading career graph...</div>';
+        '<div class="loading">Exploring graph...</div>';
 
     try {
         const response = await fetch(
-            `${API_BASE}/career-graph/${encodeURIComponent(candidateId)}`
+            `${API_BASE}/graph/${encodeURIComponent(candidateId)}`
         );
 
         if (!response.ok) {
-            throw new Error(
-                `Career graph API error: ${response.status}`
-            );
+            throw new Error(`Graph API error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const graphData = await response.json();
 
-        const nodes = data.nodes || [];
-        const relationships =
-            data.relationships ||
-            data.edges ||
-            [];
-
-        if (!nodes.length) {
+        if (graphData.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">🌐</div>
-                    <h3>No graph data found</h3>
-                    <p>No career graph information is available.</p>
+                    <h3>No graph relationships found</h3>
+                    <p>No career relationships were found.</p>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = `
-            <div class="graph-summary">
-                <div>
-                    <strong>${nodes.length}</strong>
-                    <span>Nodes</span>
+        container.innerHTML = graphData.map(item => `
+            <div class="graph-row">
+
+                <div class="graph-item">
+                    <strong>Candidate</strong>
+                    ${escapeHtml(item.candidate)}
                 </div>
 
-                <div>
-                    <strong>${relationships.length}</strong>
-                    <span>Connections</span>
+                <div class="graph-item">
+                    <strong>Skill</strong>
+                    ${escapeHtml(item.skill)}
                 </div>
-            </div>
 
-            <div class="graph-data">
-                ${nodes.map(node => `
-                    <div class="graph-node">
-                        <strong>
-                            ${escapeHtml(
-                                node.name ||
-                                node.label ||
-                                node.id ||
-                                "Node"
-                            )}
-                        </strong>
+                <div class="graph-item">
+                    <strong>Job</strong>
+                    ${escapeHtml(item.job)}
+                </div>
 
-                        ${
-                            node.type
-                                ? `<span>${escapeHtml(node.type)}</span>`
-                                : ""
-                        }
-                    </div>
-                `).join("")}
+                <div class="graph-item">
+                    <strong>Company</strong>
+                    ${escapeHtml(item.company)}
+                </div>
+
             </div>
-        `;
+        `).join("");
 
     } catch (error) {
         console.error("Graph error:", error);
