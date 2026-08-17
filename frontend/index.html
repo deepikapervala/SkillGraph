@@ -12,6 +12,7 @@
 <body>
 
     <header class="navbar">
+
         <div class="logo">
             <span class="logo-icon">SG</span>
             <span>SkillGraph</span>
@@ -22,17 +23,25 @@
             <a href="#candidates">Candidates</a>
             <a href="#jobs">Jobs</a>
             <a href="#recommendations">Recommendations</a>
+            <a href="#skill-gap">Skill Gap</a>
+            <a href="#related-skills">Related Skills</a>
+            <a href="#career-graph">Career Graph</a>
         </nav>
+
     </header>
 
 
     <main>
 
         <!-- HERO SECTION -->
+
         <section class="hero" id="dashboard">
 
             <div class="hero-content">
-                <span class="badge">GRAPH-BASED CAREER PLATFORM</span>
+
+                <span class="badge">
+                    GRAPH-BASED CAREER PLATFORM
+                </span>
 
                 <h1>
                     Discover Your
@@ -45,25 +54,47 @@
                 </p>
 
                 <div class="hero-buttons">
+
                     <button onclick="scrollToCandidates()">
                         Explore Candidates
                     </button>
 
-                    <button class="secondary-btn" onclick="scrollToJobs()">
+                    <button
+                        class="secondary-btn"
+                        onclick="scrollToJobs()"
+                    >
                         Explore Jobs
                     </button>
+
                 </div>
+
             </div>
+
 
             <div class="hero-card">
 
                 <div class="graph-circle">
-                    <div class="graph-node center-node">YOU</div>
 
-                    <div class="graph-node node-1">Python</div>
-                    <div class="graph-node node-2">SQL</div>
-                    <div class="graph-node node-3">Jobs</div>
-                    <div class="graph-node node-4">Skills</div>
+                    <div class="graph-node center-node">
+                        YOU
+                    </div>
+
+                    <div class="graph-node node-1">
+                        Python
+                    </div>
+
+                    <div class="graph-node node-2">
+                        SQL
+                    </div>
+
+                    <div class="graph-node node-3">
+                        Jobs
+                    </div>
+
+                    <div class="graph-node node-4">
+                        Skills
+                    </div>
+
                 </div>
 
             </div>
@@ -72,51 +103,104 @@
 
 
         <!-- STATS -->
+
         <section class="stats">
 
             <div class="stat-card">
-                <div class="stat-number" id="candidateCount">-</div>
-                <div class="stat-label">Candidates</div>
+
+                <div
+                    class="stat-number"
+                    id="candidateCount"
+                >
+                    -
+                </div>
+
+                <div class="stat-label">
+                    Candidates
+                </div>
+
             </div>
 
-            <div class="stat-card">
-                <div class="stat-number" id="jobCount">-</div>
-                <div class="stat-label">Jobs</div>
-            </div>
 
             <div class="stat-card">
-                <div class="stat-number">10+</div>
-                <div class="stat-label">Skills</div>
+
+                <div
+                    class="stat-number"
+                    id="jobCount"
+                >
+                    -
+                </div>
+
+                <div class="stat-label">
+                    Jobs
+                </div>
+
             </div>
 
+
             <div class="stat-card">
-                <div class="stat-number">Graph</div>
-                <div class="stat-label">Powered</div>
+
+                <div class="stat-number">
+                    10+
+                </div>
+
+                <div class="stat-label">
+                    Skills
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-number">
+                    Graph
+                </div>
+
+                <div class="stat-label">
+                    Powered
+                </div>
+
             </div>
 
         </section>
 
 
         <!-- CANDIDATES -->
-        <section class="section" id="candidates">
+
+        <section
+            class="section"
+            id="candidates"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">CANDIDATES</span>
 
-                <h2>Explore Candidates</h2>
+                <span class="section-tag">
+                    CANDIDATES
+                </span>
+
+                <h2>
+                    Explore Candidates
+                </h2>
 
                 <p>
                     Select a candidate to view their skills and career
                     opportunities.
                 </p>
+
             </div>
 
 
             <div class="candidate-controls">
 
                 <select id="candidateSelect">
-                    <option value="">Select a candidate</option>
+
+                    <option value="">
+                        Select a candidate
+                    </option>
+
                 </select>
+
 
                 <button onclick="loadCandidateSkills()">
                     View Skills
@@ -125,16 +209,25 @@
             </div>
 
 
-            <div id="candidateResult" class="result-container">
+            <div
+                id="candidateResult"
+                class="result-container"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">👤</div>
 
-                    <h3>Select a candidate</h3>
+                    <div class="empty-icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Select a candidate
+                    </h3>
 
                     <p>
                         Candidate skills will appear here.
                     </p>
+
                 </div>
 
             </div>
@@ -143,20 +236,33 @@
 
 
         <!-- JOBS -->
-        <section class="section jobs-section" id="jobs">
+
+        <section
+            class="section jobs-section"
+            id="jobs"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">CAREER OPPORTUNITIES</span>
 
-                <h2>Available Jobs</h2>
+                <span class="section-tag">
+                    CAREER OPPORTUNITIES
+                </span>
+
+                <h2>
+                    Available Jobs
+                </h2>
 
                 <p>
                     Explore jobs and the skills required for each role.
                 </p>
+
             </div>
 
 
-            <div id="jobsContainer" class="jobs-grid">
+            <div
+                id="jobsContainer"
+                class="jobs-grid"
+            >
 
                 <div class="loading">
                     Loading jobs...
@@ -168,24 +274,39 @@
 
 
         <!-- RECOMMENDATIONS -->
-        <section class="section recommendations-section" id="recommendations">
+
+        <section
+            class="section recommendations-section"
+            id="recommendations"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">SMART MATCHING</span>
 
-                <h2>Job Recommendations</h2>
+                <span class="section-tag">
+                    SMART MATCHING
+                </span>
+
+                <h2>
+                    Job Recommendations
+                </h2>
 
                 <p>
                     Find jobs that match a candidate's existing skills.
                 </p>
+
             </div>
 
 
             <div class="recommendation-controls">
 
                 <select id="recommendationCandidate">
-                    <option value="">Select a candidate</option>
+
+                    <option value="">
+                        Select a candidate
+                    </option>
+
                 </select>
+
 
                 <button onclick="loadRecommendations()">
                     Get Recommendations
@@ -194,16 +315,25 @@
             </div>
 
 
-            <div id="recommendationsContainer" class="recommendations-grid">
+            <div
+                id="recommendationsContainer"
+                class="recommendations-grid"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">🎯</div>
 
-                    <h3>Find your best job matches</h3>
+                    <div class="empty-icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        Find your best job matches
+                    </h3>
 
                     <p>
                         Select a candidate to generate recommendations.
                     </p>
+
                 </div>
 
             </div>
@@ -212,28 +342,48 @@
 
 
         <!-- SKILL GAP -->
-        <section class="section skill-gap-section">
+
+        <section
+            class="section skill-gap-section"
+            id="skill-gap"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">SKILL ANALYSIS</span>
 
-                <h2>Skill Gap Analysis</h2>
+                <span class="section-tag">
+                    SKILL ANALYSIS
+                </span>
+
+                <h2>
+                    Skill Gap Analysis
+                </h2>
 
                 <p>
                     Identify the skills a candidate needs for a specific job.
                 </p>
+
             </div>
 
 
             <div class="gap-controls">
 
                 <select id="gapCandidate">
-                    <option value="">Select candidate</option>
+
+                    <option value="">
+                        Select candidate
+                    </option>
+
                 </select>
 
+
                 <select id="gapJob">
-                    <option value="">Select job</option>
+
+                    <option value="">
+                        Select job
+                    </option>
+
                 </select>
+
 
                 <button onclick="loadSkillGap()">
                     Analyze Skill Gap
@@ -242,16 +392,25 @@
             </div>
 
 
-            <div id="skillGapContainer" class="result-container">
+            <div
+                id="skillGapContainer"
+                class="result-container"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">📊</div>
 
-                    <h3>Analyze a skill gap</h3>
+                    <div class="empty-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Analyze a skill gap
+                    </h3>
 
                     <p>
                         Select a candidate and a job to see missing skills.
                     </p>
+
                 </div>
 
             </div>
@@ -260,17 +419,27 @@
 
 
         <!-- RELATED SKILLS -->
-        <section class="section related-section">
+
+        <section
+            class="section related-section"
+            id="related-skills"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">SKILL NETWORK</span>
 
-                <h2>Related Skills</h2>
+                <span class="section-tag">
+                    SKILL NETWORK
+                </span>
+
+                <h2>
+                    Related Skills
+                </h2>
 
                 <p>
                     Discover skills that frequently appear together in job
                     requirements.
                 </p>
+
             </div>
 
 
@@ -282,6 +451,7 @@
                     placeholder="Enter a skill e.g. SQL"
                 >
 
+
                 <button onclick="loadRelatedSkills()">
                     Find Related Skills
                 </button>
@@ -289,16 +459,25 @@
             </div>
 
 
-            <div id="relatedSkillsContainer" class="skills-container">
+            <div
+                id="relatedSkillsContainer"
+                class="skills-container"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">🔗</div>
 
-                    <h3>Explore the skill network</h3>
+                    <div class="empty-icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Explore the skill network
+                    </h3>
 
                     <p>
                         Enter a skill to discover related skills.
                     </p>
+
                 </div>
 
             </div>
@@ -306,26 +485,41 @@
         </section>
 
 
-        <!-- GRAPH -->
-        <section class="section graph-section">
+        <!-- CAREER GRAPH -->
+
+        <section
+            class="section graph-section"
+            id="career-graph"
+        >
 
             <div class="section-heading">
-                <span class="section-tag">GRAPH EXPLORATION</span>
 
-                <h2>Career Graph</h2>
+                <span class="section-tag">
+                    GRAPH EXPLORATION
+                </span>
+
+                <h2>
+                    Career Graph
+                </h2>
 
                 <p>
                     Explore the relationship between candidates, skills,
                     jobs and companies.
                 </p>
+
             </div>
 
 
             <div class="graph-controls">
 
                 <select id="graphCandidate">
-                    <option value="">Select a candidate</option>
+
+                    <option value="">
+                        Select a candidate
+                    </option>
+
                 </select>
+
 
                 <button onclick="loadGraph()">
                     Explore Graph
@@ -334,16 +528,25 @@
             </div>
 
 
-            <div id="graphContainer" class="graph-results">
+            <div
+                id="graphContainer"
+                class="graph-results"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">🌐</div>
 
-                    <h3>Explore career relationships</h3>
+                    <div class="empty-icon">
+                        🌐
+                    </div>
+
+                    <h3>
+                        Explore career relationships
+                    </h3>
 
                     <p>
                         Select a candidate to view their career graph.
                     </p>
+
                 </div>
 
             </div>
@@ -354,18 +557,28 @@
 
 
     <!-- FOOTER -->
+
     <footer>
 
         <div class="footer-content">
 
             <div class="footer-logo">
-                <span class="logo-icon">SG</span>
-                <strong>SkillGraph</strong>
+
+                <span class="logo-icon">
+                    SG
+                </span>
+
+                <strong>
+                    SkillGraph
+                </strong>
+
             </div>
+
 
             <p>
                 Graph-powered skill and career exploration platform.
             </p>
+
 
             <span class="footer-copy">
                 © 2026 SkillGraph
