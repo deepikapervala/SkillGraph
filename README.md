@@ -1,24 +1,26 @@
 # SkillGraph
 
-SkillGraph is a career intelligence platform that connects candidates, skills, jobs, and companies to help users identify suitable career opportunities and skill gaps.
+SkillGraph is a graph-based career intelligence platform that connects candidates, skills, jobs, and companies to provide personalized job recommendations and skill gap analysis.
 
 ## Features
 
 - Candidate skill exploration
 - Job and skill requirement analysis
-- Smart job recommendations
+- Smart job recommendations with match percentage
 - Skill gap analysis
 - Related skills discovery
-- Career graph visualization
+- Career graph exploration
+- Graph-based relationship analysis
 
 ## Tech Stack
 
 - Python
-- Flask
+- FastAPI
+- Neo4j
+- Cypher
 - HTML
 - CSS
 - JavaScript
-- SQL
 
 ## Project Screenshots
 
